@@ -10,13 +10,13 @@ namespace Config {
     inline float Step = 0.18f;
     inline std::atomic<bool> EnableCameraSmoothing = false;
 
-    inline int ToggleKey = VK_NUMPAD7;
-    inline int IncDistKey = VK_ADD;
-    inline int DecDistKey = VK_SUBTRACT;
-    inline int IncWidthKey = VK_RIGHT;
-    inline int DecWidthKey = VK_LEFT;
-    inline int IncHeightKey = VK_UP;
-    inline int DecHeightKey = VK_DOWN;
+    inline int ToggleKey = VK_F3;
+    inline int IncDistKey = VK_F4;
+    inline int DecDistKey = VK_F5;
+    inline int IncWidthKey = VK_F6;
+    inline int DecWidthKey = VK_F7;
+    inline int IncHeightKey = VK_F8;
+    inline int DecHeightKey = VK_F9;
 
     inline uint32_t StructStride = 0x108;
     inline int CopiesXYZ = 2;
