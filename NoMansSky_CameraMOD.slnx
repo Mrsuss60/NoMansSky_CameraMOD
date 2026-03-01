@@ -4,5 +4,6 @@
     <Platform Name="x86" />
   </Configurations>
   <Project Path="CTPCamera/CTPCamera.vcxproj" Id="5a38814e-6372-4dc9-84de-c39384c15119" />
+  <Project Path="NoFOVLimit/NoFOVLimit.vcxproj" Id="3a197c45-084c-48bb-8f8f-eee8434f748f" />
   <Project Path="VersionModLoader/VersionModLoader.vcxproj" Id="7f94e538-daa0-4899-83ca-341ddbc66b8c" />
 </Solution>
