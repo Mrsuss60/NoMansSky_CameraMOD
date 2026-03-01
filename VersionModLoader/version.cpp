@@ -1,5 +1,7 @@
 #include "pch.h"
 #include <process.h>
+#include <string>
+#include <vector>
 
 #pragma comment(linker, "/export:GetFileVersionInfoA=C:\\Windows\\System32\\version.GetFileVersionInfoA")
 #pragma comment(linker, "/export:GetFileVersionInfoByHandle=C:\\Windows\\System32\\version.GetFileVersionInfoByHandle")
@@ -20,13 +22,39 @@
 #pragma comment(linker, "/export:VerQueryValueW=C:\\Windows\\System32\\version.VerQueryValueW")
 
 namespace {
+    void LoadAllMods(HMODULE hModule) {
+        char dllPath[MAX_PATH];
+        GetModuleFileNameA(hModule, dllPath, MAX_PATH);
+
+        std::string path(dllPath);
+        size_t lastSlash = path.find_last_of("\\/");
+        std::string dir = path.substr(0, lastSlash + 1);
+
+        std::string searchPath = dir + "*.mods";
+
+        WIN32_FIND_DATAA findData;
+        HANDLE hFind = FindFirstFileA(searchPath.c_str(), &findData);
+
+        if (hFind != INVALID_HANDLE_VALUE) {
+            do {
+                if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+                    std::string fullModPath = dir + findData.cFileName;
+                    LoadLibraryA(fullModPath.c_str());
+                }
+            } while (FindNextFileA(hFind, &findData));
+            FindClose(hFind);
+        }
+    }
+
+    HMODULE g_hProxy = nullptr;
+
     unsigned int __stdcall InitThread(void*) {
         while (FindWindowA(nullptr, "No Man's Sky") == nullptr) {
             Sleep(1000);
         }
 
         Sleep(5000);
-        LoadLibraryA("NMSCTPCamera.mods");
+        LoadAllMods(g_hProxy);
         return 0;
     }
 }
