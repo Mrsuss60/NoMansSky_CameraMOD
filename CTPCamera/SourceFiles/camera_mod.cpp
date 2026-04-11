@@ -151,7 +151,7 @@ static void ToggleMod() {
     }
     if (Config::AddrCollision2) {
         VirtualProtect((void*)Config::AddrCollision2, 8, PAGE_EXECUTE_READWRITE, &oP);
-        memcpy((void*)Config::AddrCollision2, Config::bModActive ? Config::PatchXorpsXmm1 : Config::OrigCollision2, 8);
+        memcpy((void*)Config::AddrCollision2, Config::bModActive ? Config::PatchXorpsXmm2 : Config::OrigCollision2, 8);
         VirtualProtect((void*)Config::AddrCollision2, 8, oP, &oP);
     }
 
