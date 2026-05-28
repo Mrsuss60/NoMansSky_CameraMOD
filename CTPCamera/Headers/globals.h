@@ -18,7 +18,7 @@ namespace Config {
     inline int IncHeightKey = VK_F9;
     inline int DecHeightKey = VK_F8;
 
-    inline uint32_t StructStride = 0x108;
+    inline uint32_t StructStride = 0x110;
     inline int CopiesXYZ = 2;
     inline int CopiesSmoothing = 2;
     inline int CopiesCollision = 2;
@@ -30,7 +30,7 @@ namespace Config {
     inline uint32_t OffsetSprintCameraS = 0x494;
     inline uint32_t OffsetCollision = 0x4A0;
 
-    inline const char* SigCamera = "F3 0F 11 8B 98 04 00 00 F3 0F 10 8B E0 06";
+    inline const char* SigCamera = "F3 0F 11 8B 98 04 00 00 F3 0F 10 ?? ?? ??";
     inline const char* SigCollisionRead1 = "F3 0F 59 83 A0 04 00 00";
     inline const char* SigCollisionRead2 = "F3 0F 59 93 A0 04 00 00";
     inline const char* SigCameraSmoothing2 = "F3 0F 11 9E 10 02 00 00";
