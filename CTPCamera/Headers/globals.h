@@ -7,8 +7,13 @@ namespace Config {
     inline std::atomic<float> CustomX = 22.54f;
     inline std::atomic<float> CustomHeight = -0.67f;
     inline std::atomic<float> CustomDist = 3.02f;
+    inline float CorvetteInteriorDistance = 3.40f;
+    inline float CorvetteInteriorDistanceTolerance = 0.02f;
+    inline float CorvetteSafeCustomDistance = 3.41f;
     inline float Step = 0.18f;
     inline std::atomic<bool> EnableCameraSmoothing = false;
+    inline std::atomic<bool> EnableHotkeys = true;
+    inline bool EnableConsole = 0;
 
     inline int ToggleKey = VK_F3;
     inline int IncDistKey = VK_F4;
@@ -31,9 +36,15 @@ namespace Config {
     inline uint32_t OffsetCollision = 0x4A0;
 
     inline const char* SigCamera = "F3 0F 11 8B 98 04 00 00 F3 0F 10 ?? ?? ??";
+    inline const char* SigCameraShort = "F3 0F 11 8B 98 04 00 00";
     inline const char* SigCollisionRead1 = "F3 0F 59 83 A0 04 00 00";
     inline const char* SigCollisionRead2 = "F3 0F 59 93 A0 04 00 00";
     inline const char* SigCameraSmoothing2 = "F3 0F 11 9E 10 02 00 00";
+
+    inline uint32_t OffsetCharacterRigTag = 0x478;
+    inline int CorvetteExitTransitionSteps = 35;
+
+    inline std::atomic<bool> EnableCorvetteInteriorGuard = true;
 
     inline std::atomic<bool> bModActive = true;
     inline std::atomic<bool> bInitialized = false;
