@@ -1,12 +1,40 @@
 #include <windows.h>
 #include <iostream>
 #include <cstdio>
+#include <string>
 #include "config_file.h"
 #include "camera_mod.h"
 #include "camera_ui.h"
 #include "globals.h"
 #include "logger.h"
 #include "camera_mod_veh.h"
+
+static bool IsMicrosoftStoreVersion() {
+    char exePath[MAX_PATH];
+    if (!GetModuleFileNameA(nullptr, exePath, MAX_PATH)) return false;
+    std::string dir = exePath;
+    size_t pos = dir.find_last_of("\\/");
+    if (pos != std::string::npos) dir = dir.substr(0, pos + 1);
+
+    const char* msDlls[] = {
+        "PartyXboxLive.dll",
+        "PlayFabCore.GDK.dll",
+        "PlayFabMultiplayerGDK.dll",
+        "PlayFabServices.GDK.dll"
+    };
+
+    for (const char* dll : msDlls) {
+        std::string fullPath = dir + dll;
+        DWORD attr = GetFileAttributesA(fullPath.c_str());
+        if (attr != INVALID_FILE_ATTRIBUTES && !(attr & FILE_ATTRIBUTE_DIRECTORY)) {
+            return true;
+        }
+        if (GetModuleHandleA(dll) != nullptr) {
+            return true;
+        }
+    }
+    return false;
+}
 
 static void CreateDebugConsole() {
     if (!Config::EnableConsole) return;
@@ -29,6 +57,11 @@ static void CreateDebugConsole() {
 static unsigned int __stdcall ModThread(void*) {
     CreateDebugConsole();
     Logger::Initialize();
+
+    if (IsMicrosoftStoreVersion()) {
+        std::cout << "init: microsoft store version detected, not supported for now\n";
+        return 0;
+    }
 
     std::cout << "init: loading configuration\n";
     LoadConfig();
