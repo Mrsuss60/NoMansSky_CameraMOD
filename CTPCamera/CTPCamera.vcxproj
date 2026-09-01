@@ -152,12 +152,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Headers\camera_mod.h" />
+    <ClInclude Include="Headers\camera_mod_veh.h" />
+    <ClInclude Include="Headers\camera_ui.h" />
     <ClInclude Include="Headers\config_file.h" />
     <ClInclude Include="Headers\globals.h" />
+    <ClInclude Include="Headers\globals_veh.h" />
     <ClInclude Include="Headers\g_memory.h" />
+    <ClInclude Include="Headers\logger.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SourceFiles\camera_mod.cpp" />
+    <ClCompile Include="SourceFiles\camera_mod_veh.cpp" />
+    <ClCompile Include="SourceFiles\camera_ui.cpp" />
     <ClCompile Include="SourceFiles\config_file.cpp" />
     <ClCompile Include="SourceFiles\CTPCamera.cpp" />
     <ClCompile Include="SourceFiles\g_memory.cpp" />
