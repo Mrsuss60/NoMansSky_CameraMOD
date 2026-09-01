@@ -1,9 +1,11 @@
 #include "config_file.h"
 #include "globals.h"
+#include "globals_veh.h"
 #include <windows.h>
 #include <fstream>
 #include <string>
 #include <sys/stat.h>
+#include <cmath>
 
 static time_t g_lastConfigModTime = 0;
 
@@ -37,7 +39,20 @@ void SaveConfig() {
     f << "; This option sets how fast coords changes when using the hotkeys in-game.\n";
     f << "Step=" << Config::Step << "\n";
     f << "; true = smooth camera follow and stop, false = lock the distance between camera and player. \n";
-    f << "EnableCameraSmoothing=" << (Config::EnableCameraSmoothing.load() ? "true" : "false") << "\n\n";
+    f << "EnableCameraSmoothing=" << (Config::EnableCameraSmoothing.load() ? "true" : "false") << "\n";
+    f << "EnableHotkeys=" << (Config::EnableHotkeys.load() ? "true" : "false") << "\n\n";
+
+    f << "[Vehicle Camera Distances]\n";
+    f << "; Third-person camera distance while piloting ships, the Corvette, or exocrafts\n";
+    f << "ShipsDistance=" << Config::CustomShipsDist.load() << "\n";
+    f << "CorvetteDistance=" << Config::CustomCorvetteDist.load() << "\n";
+    f << "MechDistance=" << Config::CustomMechDist.load() << "\n";
+    f << "MechHeight=" << Config::CustomMechHeight.load() << "\n";
+    f << "TruckDistance=" << Config::CustomTruckDist.load() << "\n";
+    f << "SubmarineDistance=" << Config::CustomSubDist.load() << "\n";
+    f << "BuggyDistance=" << Config::CustomExoGeneralDist.load() << "\n";
+    f << "HovercraftDistance=" << Config::CustomHoverDist.load() << "\n";
+    f << "PilgrimDistance=" << Config::CustomPilgrimDist.load() << "\n\n";
 
     f << "[Hotkeys]\n";
 
@@ -142,6 +157,7 @@ void SaveConfig() {
     f << "# VK_RCONTROL   0xA3\n";
 
     f.close();
+
     struct stat fileStat;
     if (stat(path.c_str(), &fileStat) == 0) g_lastConfigModTime = fileStat.st_mtime;
 }
@@ -149,10 +165,20 @@ void SaveConfig() {
 void LoadConfig() {
     std::string path = GetConfigPath();
     std::ifstream f(path);
-    if (!f.is_open()) { SaveConfig(); return; }
+    if (!f.is_open()) {
+        float distance = Config::CustomDist.load();
+        if (std::fabs(distance - Config::CorvetteInteriorDistance) <= Config::CorvetteInteriorDistanceTolerance)
+            Config::CustomDist.store(Config::CorvetteSafeCustomDistance);
+        SaveConfig();
+        return;
+    }
 
     std::string line;
+    bool normalizedCorvetteDistance = false;
     auto ClampValue = [](float v) { return v > 50.0f ? 50.0f : (v < -50.0f ? -50.0f : v); };
+    auto ClampRange = [](float v, float minVal, float maxVal) {
+        return (std::min)(maxVal, (std::max)(minVal, v));
+    };
 
     while (std::getline(f, line)) {
         if (line.empty() || line[0] == '#' || line[0] == '[' || line[0] == ';') continue;
@@ -164,11 +190,28 @@ void LoadConfig() {
         val.erase(0, val.find_first_not_of(" \t\r\n")); val.erase(val.find_last_not_of(" \t\r\n") + 1);
 
         try {
-            if (key == "Distance") Config::CustomDist.store(ClampValue(std::stof(val)));
+            if (key == "Distance") {
+                float distance = ClampValue(std::stof(val));
+                if (std::fabs(distance - Config::CorvetteInteriorDistance) <= Config::CorvetteInteriorDistanceTolerance) {
+                    distance = Config::CorvetteSafeCustomDistance;
+                    normalizedCorvetteDistance = true;
+                }
+                Config::CustomDist.store(distance);
+            }
             else if (key == "WidthX") Config::CustomX.store(ClampValue(std::stof(val)));
             else if (key == "Height") Config::CustomHeight.store(ClampValue(std::stof(val)));
             else if (key == "Step") Config::Step = std::stof(val);
             else if (key == "EnableCameraSmoothing") Config::EnableCameraSmoothing.store(val == "true" || val == "1");
+            else if (key == "EnableHotkeys") Config::EnableHotkeys.store(val == "true" || val == "1");
+            else if (key == "ShipsDistance") Config::CustomShipsDist.store(ClampRange(std::stof(val), 20.0f, 65.0f));
+            else if (key == "CorvetteDistance") Config::CustomCorvetteDist.store(ClampRange(std::stof(val), 28.0f, 85.0f));
+            else if (key == "MechDistance") Config::CustomMechDist.store(ClampRange(std::stof(val), 6.5f, 30.0f));
+            else if (key == "MechHeight") Config::CustomMechHeight.store(ClampRange(std::stof(val), -0.5f, 10.0f));
+            else if (key == "TruckDistance") Config::CustomTruckDist.store(ClampRange(std::stof(val), 12.0f, 50.0f));
+            else if (key == "SubmarineDistance") Config::CustomSubDist.store(ClampRange(std::stof(val), 15.0f, 50.0f));
+            else if (key == "BuggyDistance") Config::CustomExoGeneralDist.store(ClampRange(std::stof(val), 15.25f, 45.0f));
+            else if (key == "HovercraftDistance") Config::CustomHoverDist.store(ClampRange(std::stof(val), 16.5f, 45.0f));
+            else if (key == "PilgrimDistance") Config::CustomPilgrimDist.store(ClampRange(std::stof(val), 15.25f, 45.0f));
             else if (key == "ToggleModKey") Config::ToggleKey = std::stoi(val, nullptr, 16);
             else if (key == "IncreaseDistanceKey") Config::IncDistKey = std::stoi(val, nullptr, 16);
             else if (key == "DecreaseDistanceKey") Config::DecDistKey = std::stoi(val, nullptr, 16);
@@ -180,6 +223,10 @@ void LoadConfig() {
         catch (...) {}
     }
     f.close();
+
+    if (normalizedCorvetteDistance)
+        SaveConfig();
+
     struct stat fileStat;
     if (stat(path.c_str(), &fileStat) == 0) g_lastConfigModTime = fileStat.st_mtime;
 }
