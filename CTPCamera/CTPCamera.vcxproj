@@ -168,6 +168,9 @@
     <ClCompile Include="SourceFiles\CTPCamera.cpp" />
     <ClCompile Include="SourceFiles\g_memory.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

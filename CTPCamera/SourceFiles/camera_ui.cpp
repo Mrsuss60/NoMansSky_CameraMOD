@@ -529,9 +529,9 @@ namespace CameraUI {
         memcpy(&relayStub[6], &detourAddr, sizeof(uintptr_t));
 
         DWORD oldProtect;
-        VirtualProtect(s_pRelayTrampoline, sizeof(relayStub), PAGE_EXECUTE_READWRITE, &oldProtect);
+        VirtualProtect(s_pRelayTrampoline, sizeof(relayStub), PAGE_READWRITE, &oldProtect);
         memcpy(s_pRelayTrampoline, relayStub, sizeof(relayStub));
-        VirtualProtect(s_pRelayTrampoline, sizeof(relayStub), oldProtect, &oldProtect);
+        VirtualProtect(s_pRelayTrampoline, sizeof(relayStub), PAGE_EXECUTE_READ, &oldProtect);
         FlushInstructionCache(GetCurrentProcess(), s_pRelayTrampoline, sizeof(relayStub));
 
         VirtualProtect(reinterpret_cast<void*>(s_CallSiteEndCyclic), 5, PAGE_EXECUTE_READWRITE, &oldProtect);

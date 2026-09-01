@@ -41,10 +41,10 @@ void* AllocateNearAddress(uintptr_t target, size_t size) {
     uint64_t maxA = min(start + 0x7FFFFF00, (uint64_t)sI.lpMaximumApplicationAddress);
 
     for (uint64_t a = start; a > minA; a -= pSize) {
-        if (void* alloc = VirtualAlloc((void*)a, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)) return alloc;
+        if (void* alloc = VirtualAlloc((void*)a, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE)) return alloc;
     }
     for (uint64_t a = start; a < maxA; a += pSize) {
-        if (void* alloc = VirtualAlloc((void*)a, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE)) return alloc;
+        if (void* alloc = VirtualAlloc((void*)a, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE)) return alloc;
     }
     return nullptr;
 }

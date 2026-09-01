@@ -345,9 +345,10 @@ void RebuildCameraShellcode() {
     patchJmp(jmp_invalid);
 
     DWORD oP;
-    VirtualProtect((void*)Config::AddrCodecave, sc.size(), PAGE_EXECUTE_READWRITE, &oP);
+    VirtualProtect((void*)Config::AddrCodecave, sc.size(), PAGE_READWRITE, &oP);
     memcpy((void*)Config::AddrCodecave, sc.data(), sc.size());
-    VirtualProtect((void*)Config::AddrCodecave, sc.size(), oP, &oP);
+    VirtualProtect((void*)Config::AddrCodecave, sc.size(), PAGE_EXECUTE_READ, &oP);
+    FlushInstructionCache(GetCurrentProcess(), (void*)Config::AddrCodecave, sc.size());
 
     UpdateSmoothingPatch();
 }

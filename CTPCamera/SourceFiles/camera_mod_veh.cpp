@@ -291,9 +291,9 @@ namespace VehicleCamera {
         memcpy(&trampBytes[12], &continueAddr, sizeof(uintptr_t));
 
         DWORD oldProtect;
-        VirtualProtect(s_pVehTrampoline, sizeof(trampBytes), PAGE_EXECUTE_READWRITE, &oldProtect);
+        VirtualProtect(s_pVehTrampoline, sizeof(trampBytes), PAGE_READWRITE, &oldProtect);
         memcpy(s_pVehTrampoline, trampBytes, sizeof(trampBytes));
-        VirtualProtect(s_pVehTrampoline, sizeof(trampBytes), oldProtect, &oldProtect);
+        VirtualProtect(s_pVehTrampoline, sizeof(trampBytes), PAGE_EXECUTE_READ, &oldProtect);
         FlushInstructionCache(GetCurrentProcess(), s_pVehTrampoline, sizeof(trampBytes));
 
         s_origSub140650680 = reinterpret_cast<tSub140650680>(s_pVehTrampoline);
@@ -315,9 +315,9 @@ namespace VehicleCamera {
         uintptr_t detourAddr = reinterpret_cast<uintptr_t>(&Detour_MasterCameraUpdate);
         memcpy(&relayBytes[6], &detourAddr, sizeof(uintptr_t));
 
-        VirtualProtect(s_pVehRelayStub, sizeof(relayBytes), PAGE_EXECUTE_READWRITE, &oldProtect);
+        VirtualProtect(s_pVehRelayStub, sizeof(relayBytes), PAGE_READWRITE, &oldProtect);
         memcpy(s_pVehRelayStub, relayBytes, sizeof(relayBytes));
-        VirtualProtect(s_pVehRelayStub, sizeof(relayBytes), oldProtect, &oldProtect);
+        VirtualProtect(s_pVehRelayStub, sizeof(relayBytes), PAGE_EXECUTE_READ, &oldProtect);
         FlushInstructionCache(GetCurrentProcess(), s_pVehRelayStub, sizeof(relayBytes));
 
         Config::PatchedVehicleMasterHook[0] = 0xE9;
@@ -341,9 +341,9 @@ namespace VehicleCamera {
             if (aimCave) {
                 PatchExternalJumps(aimEmitter, (uintptr_t)aimCave, hookSite + 9);
 
-                VirtualProtect(aimCave, aimEmitter.buf.size(), PAGE_EXECUTE_READWRITE, &oldProtect);
+                VirtualProtect(aimCave, aimEmitter.buf.size(), PAGE_READWRITE, &oldProtect);
                 memcpy(aimCave, aimEmitter.buf.data(), aimEmitter.buf.size());
-                VirtualProtect(aimCave, aimEmitter.buf.size(), oldProtect, &oldProtect);
+                VirtualProtect(aimCave, aimEmitter.buf.size(), PAGE_EXECUTE_READ, &oldProtect);
                 FlushInstructionCache(GetCurrentProcess(), aimCave, aimEmitter.buf.size());
 
                 Config::PatchedMechAimHook[0] = 0xE9;
