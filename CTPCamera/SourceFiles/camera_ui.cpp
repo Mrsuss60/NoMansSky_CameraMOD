@@ -40,19 +40,19 @@ namespace CameraUI {
         return static_cast<float>(val) / 100.0f;
     }
 
-    // Dynamic mapping: 1 = minVal, 100 = maxVal
-    static int ToVehicleSlider(float val, float minVal, float maxVal = 250.0f) {
-        if (val <= minVal) return 1;
-        if (val >= maxVal) return 100;
+    // Dynamic mapping: minSlider = minVal, maxSlider = maxVal
+    static int ToVehicleSlider(float val, float minVal, float maxVal = 250.0f, int minSlider = 1, int maxSlider = 100) {
+        if (val <= minVal) return minSlider;
+        if (val >= maxVal) return maxSlider;
         float ratio = (val - minVal) / (maxVal - minVal);
-        int clamped = static_cast<int>(std::round(1.0f + ratio * 99.0f));
-        return (std::max)(1, (std::min)(100, clamped));
+        int clamped = static_cast<int>(std::round(static_cast<float>(minSlider) + ratio * static_cast<float>(maxSlider - minSlider)));
+        return (std::max)(minSlider, (std::min)(maxSlider, clamped));
     }
 
-    static float FromVehicleSlider(int val, float minVal, float maxVal = 250.0f) {
-        if (val <= 1) return minVal;
-        if (val >= 100) return maxVal;
-        float ratio = static_cast<float>(val - 1) / 99.0f;
+    static float FromVehicleSlider(int val, float minVal, float maxVal = 250.0f, int minSlider = 1, int maxSlider = 100) {
+        if (val <= minSlider) return minVal;
+        if (val >= maxSlider) return maxVal;
+        float ratio = static_cast<float>(val - minSlider) / static_cast<float>(maxSlider - minSlider);
         return minVal + ratio * (maxVal - minVal);
     }
 
@@ -236,7 +236,7 @@ namespace CameraUI {
                 bChanged = true;
             }
 
-            int curCorvetteDistUI = ToVehicleSlider(Config::CustomCorvetteDist.load(), 28.0f, 85.0f);
+            int curCorvetteDistUI = ToVehicleSlider(Config::CustomCorvetteDist.load(), 28.0f, 350.0f, 1, 300);
             int newCorvetteDistUI = fnAddIntSlider(
                 pUIContext,
                 "CORVETTE Camera Distance",
@@ -244,11 +244,11 @@ namespace CameraUI {
                 curCorvetteDistUI,
                 1,
                 1,
-                100,
+                300,
                 &vehicleParams
             );
             if (newCorvetteDistUI != curCorvetteDistUI) {
-                float newCorvetteDistVal = FromVehicleSlider(newCorvetteDistUI, 28.0f, 85.0f);
+                float newCorvetteDistVal = FromVehicleSlider(newCorvetteDistUI, 28.0f, 350.0f, 1, 300);
                 Config::CustomCorvetteDist.store(newCorvetteDistVal);
                 bChanged = true;
             }
