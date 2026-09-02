@@ -204,7 +204,7 @@ void LoadConfig() {
             else if (key == "EnableCameraSmoothing") Config::EnableCameraSmoothing.store(val == "true" || val == "1");
             else if (key == "EnableHotkeys") Config::EnableHotkeys.store(val == "true" || val == "1");
             else if (key == "ShipsDistance") Config::CustomShipsDist.store(ClampRange(std::stof(val), 20.0f, 65.0f));
-            else if (key == "CorvetteDistance") Config::CustomCorvetteDist.store(ClampRange(std::stof(val), 28.0f, 85.0f));
+            else if (key == "CorvetteDistance") Config::CustomCorvetteDist.store(ClampRange(std::stof(val), 28.0f, 350.0f));
             else if (key == "MechDistance") Config::CustomMechDist.store(ClampRange(std::stof(val), 6.5f, 30.0f));
             else if (key == "MechHeight") Config::CustomMechHeight.store(ClampRange(std::stof(val), -0.5f, 10.0f));
             else if (key == "TruckDistance") Config::CustomTruckDist.store(ClampRange(std::stof(val), 12.0f, 50.0f));
