@@ -32,7 +32,7 @@ void SaveConfig() {
     f << "[Camera Coordinates]\n";
     f << "; Can be changed manually while in-game\n";
     f << "Distance=" << Config::CustomDist.load() << "\n";
-    f << "WidthX=" << Config::CustomX.load() << "\n";
+    f << "X-Offset=" << Config::CustomX.load() << "\n";
     f << "Height=" << Config::CustomHeight.load() << "\n\n";
 
     f << "[Settings]\n";
@@ -45,7 +45,9 @@ void SaveConfig() {
     f << "[Vehicle Camera Distances]\n";
     f << "; Third-person camera distance while piloting ships, the Corvette, or exocrafts\n";
     f << "ShipsDistance=" << Config::CustomShipsDist.load() << "\n";
+    f << "ShipsX-Offset=" << Config::CustomShipsX.load() << "\n";
     f << "CorvetteDistance=" << Config::CustomCorvetteDist.load() << "\n";
+    f << "CorvetteX-Offset=" << Config::CustomCorvetteX.load() << "\n";
     f << "MechDistance=" << Config::CustomMechDist.load() << "\n";
     f << "MechHeight=" << Config::CustomMechHeight.load() << "\n";
     f << "TruckDistance=" << Config::CustomTruckDist.load() << "\n";
@@ -63,8 +65,8 @@ void SaveConfig() {
     f << "IncreaseDistanceKey=" << Config::IncDistKey << "\n";
     f << "DecreaseDistanceKey=" << Config::DecDistKey << "\n\n";
 
-    f << "IncreaseWidthKey=" << Config::IncWidthKey << "\n";
-    f << "DecreaseWidthKey=" << Config::DecWidthKey << "\n\n";
+    f << "IncreaseX-OffsetKey=" << Config::IncWidthKey << "\n";
+    f << "DecreaseX-OffsetKey=" << Config::DecWidthKey << "\n\n";
 
     f << "IncreaseHeightKey=" << Config::IncHeightKey << "\n";
     f << "DecreaseHeightKey=" << Config::DecHeightKey << "\n\n";
@@ -198,13 +200,15 @@ void LoadConfig() {
                 }
                 Config::CustomDist.store(distance);
             }
-            else if (key == "WidthX") Config::CustomX.store(ClampValue(std::stof(val)));
+            else if (key == "X-Offset") Config::CustomX.store(ClampValue(std::stof(val)));
             else if (key == "Height") Config::CustomHeight.store(ClampValue(std::stof(val)));
             else if (key == "Step") Config::Step = std::stof(val);
             else if (key == "EnableCameraSmoothing") Config::EnableCameraSmoothing.store(val == "true" || val == "1");
             else if (key == "EnableHotkeys") Config::EnableHotkeys.store(val == "true" || val == "1");
             else if (key == "ShipsDistance") Config::CustomShipsDist.store(ClampRange(std::stof(val), 20.0f, 65.0f));
+            else if (key == "ShipsX-Offset") Config::CustomShipsX.store(ClampRange(std::stof(val), -25.0f, 25.0f));
             else if (key == "CorvetteDistance") Config::CustomCorvetteDist.store(ClampRange(std::stof(val), 28.0f, 350.0f));
+            else if (key == "CorvetteX-Offset") Config::CustomCorvetteX.store(ClampRange(std::stof(val), -50.0f, 50.0f));
             else if (key == "MechDistance") Config::CustomMechDist.store(ClampRange(std::stof(val), 6.5f, 30.0f));
             else if (key == "MechHeight") Config::CustomMechHeight.store(ClampRange(std::stof(val), -0.5f, 10.0f));
             else if (key == "TruckDistance") Config::CustomTruckDist.store(ClampRange(std::stof(val), 12.0f, 50.0f));
@@ -215,8 +219,8 @@ void LoadConfig() {
             else if (key == "ToggleModKey") Config::ToggleKey = std::stoi(val, nullptr, 16);
             else if (key == "IncreaseDistanceKey") Config::IncDistKey = std::stoi(val, nullptr, 16);
             else if (key == "DecreaseDistanceKey") Config::DecDistKey = std::stoi(val, nullptr, 16);
-            else if (key == "IncreaseWidthKey") Config::IncWidthKey = std::stoi(val, nullptr, 16);
-            else if (key == "DecreaseWidthKey") Config::DecWidthKey = std::stoi(val, nullptr, 16);
+            else if (key == "IncreaseX-OffsetKey") Config::IncWidthKey = std::stoi(val, nullptr, 16);
+            else if (key == "DecreaseX-OffsetKey") Config::DecWidthKey = std::stoi(val, nullptr, 16);
             else if (key == "IncreaseHeightKey") Config::IncHeightKey = std::stoi(val, nullptr, 16);
             else if (key == "DecreaseHeightKey") Config::DecHeightKey = std::stoi(val, nullptr, 16);
         }

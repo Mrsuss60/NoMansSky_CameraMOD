@@ -56,6 +56,28 @@ namespace CameraUI {
         return minVal + ratio * (maxVal - minVal);
     }
 
+    static int ToShipsXSlider(float val, float maxOffset = 25.0f) {
+        if (std::abs(val) < 0.001f) return 50;
+        if (val > 0.0f) {
+            int tick = static_cast<int>(std::round(50.0f + (val / maxOffset) * 50.0f));
+            return (std::max)(50, (std::min)(100, tick));
+        }
+        else {
+            int tick = static_cast<int>(std::round(50.0f + (val / maxOffset) * 49.0f));
+            return (std::max)(1, (std::min)(50, tick));
+        }
+    }
+
+    static float FromShipsXSlider(int sliderVal, float maxOffset = 25.0f) {
+        if (sliderVal == 50) return 0.0f;
+        if (sliderVal > 50) {
+            return (static_cast<float>(sliderVal - 50) / 50.0f) * maxOffset;
+        }
+        else {
+            return (static_cast<float>(sliderVal - 50) / 49.0f) * maxOffset;
+        }
+    }
+
     static void UpdateModPatches(bool bEnable) {
         DWORD oP;
         if (Config::AddrCameraHook) {
@@ -129,7 +151,7 @@ namespace CameraUI {
             int newDistUI = fnAddIntSlider(
                 pUIContext,
                 "Camera Distance",
-                "Change The Camera Distance From The Player",
+                "Change The Third-Person Camera Distance From The Player",
                 curDistUI,
                 ToSliderRange(13.86f),
                 0,
@@ -146,7 +168,7 @@ namespace CameraUI {
             int newWidthUI = fnAddIntSlider(
                 pUIContext,
                 "CAMERA X-OFFSET",
-                "Change The Camera Horizontal Offset",
+                "Shift The Third-Person Camera Left Or Right From The Player",
                 curWidthUI,
                 ToSliderRange(22.54f),
                 0,
@@ -163,7 +185,7 @@ namespace CameraUI {
             int newHeightUI = fnAddIntSlider(
                 pUIContext,
                 "CAMERA HEIGHT",
-                "Change The Camera Height",
+                "Change The Third-Person Camera Height From The Player",
                 curHeightUI,
                 ToSliderRange(-0.67f),
                 0,
@@ -201,7 +223,7 @@ namespace CameraUI {
             char newSmoothing = fnAddToggleOption(
                 pUIContext,
                 "CAMERA SMOOTHING",
-                "ENABLE SMOOTH MOMENTUM TRACKING OR LOCK POSITION RIGIDLY",
+                "ENABLE SMOOTH MOMENTUM TRACKING OR LOCK DISTANCE",
                 curSmoothing,
                 0,
                 toggleLabels
@@ -236,6 +258,23 @@ namespace CameraUI {
                 bChanged = true;
             }
 
+            int curShipsXUI = ToShipsXSlider(Config::CustomShipsX.load());
+            int newShipsXUI = fnAddIntSlider(
+                pUIContext,
+                "SHIPS X-OFFSET",
+                "Shift The Third-Person Camera Left Or Right For All Starships - Default Value = 50",
+                curShipsXUI,
+                50,
+                1,
+                100,
+                &vehicleParams
+            );
+            if (newShipsXUI != curShipsXUI) {
+                float newShipsXVal = FromShipsXSlider(newShipsXUI);
+                Config::CustomShipsX.store(newShipsXVal);
+                bChanged = true;
+            }
+
             int curCorvetteDistUI = ToVehicleSlider(Config::CustomCorvetteDist.load(), 28.0f, 350.0f, 1, 300);
             int newCorvetteDistUI = fnAddIntSlider(
                 pUIContext,
@@ -250,6 +289,23 @@ namespace CameraUI {
             if (newCorvetteDistUI != curCorvetteDistUI) {
                 float newCorvetteDistVal = FromVehicleSlider(newCorvetteDistUI, 28.0f, 350.0f, 1, 300);
                 Config::CustomCorvetteDist.store(newCorvetteDistVal);
+                bChanged = true;
+            }
+
+            int curCorvetteXUI = ToShipsXSlider(Config::CustomCorvetteX.load(), 50.0f);
+            int newCorvetteXUI = fnAddIntSlider(
+                pUIContext,
+                "CORVETTE X-OFFSET",
+                "Shift The Third-Person Camera Left Or Right For The Corvette - Default Value = 50",
+                curCorvetteXUI,
+                50,
+                1,
+                100,
+                &vehicleParams
+            );
+            if (newCorvetteXUI != curCorvetteXUI) {
+                float newCorvetteXVal = FromShipsXSlider(newCorvetteXUI, 50.0f);
+                Config::CustomCorvetteX.store(newCorvetteXVal);
                 bChanged = true;
             }
 

@@ -51,6 +51,17 @@ static bool HandleCameraHook(uintptr_t camera) {
     if (!camera) return false;
     Config::GlobalCameraPtr = camera;
 
+#if 0
+    static bool bAddressLogged = false;
+    if (!bAddressLogged) {
+        std::cout << "Camera Base Address: 0x" << std::hex << camera << "\n";
+        std::cout << "CE Target Address (+0x" << std::hex << Config::OffsetDist << "): 0x" << (camera + Config::OffsetDist) << "\n";
+        std::cout << "Width (X) Address: 0x" << (camera + Config::OffsetX) << "\n";
+        std::cout << "Height Address: 0x" << (camera + Config::OffsetHeight) << std::dec << "\n";
+        bAddressLogged = true;
+    }
+#endif
+
     char currentTag[17] = { 0 };
     __try {
         memcpy(currentTag, (void*)(camera + Config::OffsetCharacterRigTag), 16);
@@ -159,6 +170,7 @@ static void ForceUpdateCamera() {
         if (memcmp(currentTag, "CHAR", 4) != 0) {
             float targetVehDist = -1.0f;
             float targetVehHeight = -999.0f;
+            float targetVehX = -999.0f;
 
             if (memcmp(currentTag, "MECH", 4) == 0) {
                 targetVehDist = Config::CustomMechDist.load();
@@ -168,13 +180,17 @@ static void ForceUpdateCamera() {
             else if (memcmp(currentTag, "SUBM", 4) == 0 || memcmp(currentTag, "SUB_", 4) == 0) targetVehDist = Config::CustomSubDist.load();
             else if (memcmp(currentTag, "BUGG", 4) == 0) targetVehDist = Config::CustomExoGeneralDist.load();
             else if (memcmp(currentTag, "HOVE", 4) == 0 || memcmp(currentTag, "VEHI", 4) == 0 || memcmp(currentTag, "BIKE", 4) == 0) targetVehDist = Config::CustomHoverDist.load();
-            else if (memcmp(currentTag, "CORV", 4) == 0) targetVehDist = Config::CustomCorvetteDist.load();
+            else if (memcmp(currentTag, "CORV", 4) == 0) {
+                targetVehDist = Config::CustomCorvetteDist.load();
+                targetVehX = Config::CustomCorvetteX.load();
+            }
             else if (memcmp(currentTag, "SPAC", 4) == 0 || memcmp(currentTag, "DROP", 4) == 0 ||
                 memcmp(currentTag, "SCIE", 4) == 0 || memcmp(currentTag, "SHUT", 4) == 0 ||
                 memcmp(currentTag, "FLAT", 4) == 0 || memcmp(currentTag, "SAIL", 4) == 0 ||
                 memcmp(currentTag, "ROYA", 4) == 0 || memcmp(currentTag, "ROBO", 4) == 0 ||
                 memcmp(currentTag, "ALIE", 4) == 0) {
                 targetVehDist = Config::CustomShipsDist.load();
+                targetVehX = Config::CustomShipsX.load();
             }
 
             if (targetVehDist > 0.0f) {
@@ -188,6 +204,13 @@ static void ForceUpdateCamera() {
                 for (int i = 0; i < Config::CopiesXYZ; ++i) {
                     uint32_t s = i * Config::StructStride;
                     *(float*)(Config::GlobalCameraPtr + Config::OffsetHeight + s) = targetVehHeight;
+                }
+            }
+
+            if (targetVehX != -999.0f) {
+                for (int i = 0; i < Config::CopiesXYZ; ++i) {
+                    uint32_t s = i * Config::StructStride;
+                    *(float*)(Config::GlobalCameraPtr + Config::OffsetX + s) = targetVehX;
                 }
             }
         }

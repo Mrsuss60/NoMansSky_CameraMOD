@@ -29,7 +29,9 @@ namespace Config {
     inline std::atomic<bool> bVehicleHooksApplied{ false };
 
     inline std::atomic<float> CustomShipsDist{ 20.0f };
+    inline std::atomic<float> CustomShipsX{ 0.0f };
     inline std::atomic<float> CustomCorvetteDist{ 28.0f };
+    inline std::atomic<float> CustomCorvetteX{ 0.0f };
     inline std::atomic<float> CustomMechDist{ 6.5f };
     inline std::atomic<float> CustomMechHeight{ -0.5f };
     inline std::atomic<float> CustomTruckDist{ 12.0f };

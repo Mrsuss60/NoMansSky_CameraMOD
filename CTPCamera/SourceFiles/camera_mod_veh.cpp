@@ -123,6 +123,7 @@ namespace {
 
             float targetVehDist = -1.0f;
             float targetVehHeight = -999.0f;
+            float targetVehX = -999.0f;
 
             if (memcmp(currentTag, "MECH", 4) == 0) {
                 targetVehDist = Config::CustomMechDist.load(std::memory_order_relaxed);
@@ -166,6 +167,7 @@ namespace {
             }
             else if (memcmp(currentTag, "CORV", 4) == 0) {
                 targetVehDist = Config::CustomCorvetteDist.load(std::memory_order_relaxed);
+                targetVehX = Config::CustomCorvetteX.load(std::memory_order_relaxed);
             }
             else if (memcmp(currentTag, "SPAC", 4) == 0 || memcmp(currentTag, "DROP", 4) == 0 ||
                 memcmp(currentTag, "SCIE", 4) == 0 || memcmp(currentTag, "SHUT", 4) == 0 ||
@@ -173,6 +175,7 @@ namespace {
                 memcmp(currentTag, "ROYA", 4) == 0 || memcmp(currentTag, "ROBO", 4) == 0 ||
                 memcmp(currentTag, "ALIE", 4) == 0) {
                 targetVehDist = Config::CustomShipsDist.load(std::memory_order_relaxed);
+                targetVehX = Config::CustomShipsX.load(std::memory_order_relaxed);
             }
 
             if (targetVehDist > 0.0f) {
@@ -194,6 +197,17 @@ namespace {
                 for (int i = 0; i < Config::CopiesXYZ; ++i) {
                     const uint32_t s = i * Config::StructStride;
                     *(float*)(camera + Config::OffsetHeight + s) = targetVehHeight;
+                }
+            }
+
+            if (targetVehX != -999.0f) {
+                if (v200) {
+                    *(float*)((uintptr_t)v200 + 0x7C) = targetVehX;
+                }
+
+                for (int i = 0; i < Config::CopiesXYZ; ++i) {
+                    const uint32_t s = i * Config::StructStride;
+                    *(float*)(camera + Config::OffsetX + s) = targetVehX;
                 }
             }
         }
